@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.benbaha.osama.entities.Personne;
 
@@ -25,19 +26,16 @@ public class PersonWriter implements ItemWriter<Personne>{
 	}
 
 
+	@Transactional
 	@Override
 	public void write(List<? extends Personne> liste) throws Exception 
 	{
-		Session s = sessionFactory.openSession();
-		s.beginTransaction(); 
+		Session s = sessionFactory.getCurrentSession();
 		for(Personne p : liste)
 		{
 			System.out.println(p.toString());
-			s.saveOrUpdate(new Personne(p.getId(), p.getPrenom(), p.getNom(), p.getCivilite()));
+			s.saveOrUpdate(p);
 		}
-		
-		s.getTransaction().commit();
-		s.close();
 	}
 
 }
